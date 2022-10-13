@@ -1,0 +1,44 @@
+name: Ping CI
+
+on:
+  schedule:
+  - cron: '30 * * * *'
+
+  workflow_dispatch:
+
+jobs:
+  run-ci:
+    env:
+      BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
+      CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+      CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    name: Run AlgoPing
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9.9
+
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.1.6
+        with:
+          poetry-version: 1.1.6
+
+      - name: Install python dependencies
+        run: poetry install
+
+      - uses: pre-commit/action@v3.0.0
+        name: "Linters and formatters check"
+        with:
+          extra_args: --all-files --show-diff-on-failure
+
+      - name: Run AlgoPing
+        run: PYTHONPATH="." poetry run python src/algoping.py
