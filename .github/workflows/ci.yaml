@@ -1,22 +1,10 @@
-name: Execute AlgoPing
+name: Execute Ping CI
 
-on:
-  schedule:
-  - cron: '30 * * * *'
-
-  workflow_dispatch:
+on: [pull_request]
 
 jobs:
-  run-algoping:
-    env:
-      BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
-      CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
-      CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    name: Run AlgoPing
+  run-ci:
+    name: Run AlgoPing CI
     runs-on: ubuntu-latest
 
     steps:
@@ -39,6 +27,3 @@ jobs:
         name: "Linters and formatters check"
         with:
           extra_args: --all-files --show-diff-on-failure
-
-      - name: Run AlgoPing
-        run: PYTHONPATH="." poetry run python src/algoping.py
