@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "env": {
+                "BEARER_TOKEN": "AAAAAAAAAAAAAAAAAAAAAOORiAEAAAAAqxYKBstPI0sauVt0l73W18UHZS0%3DDXVvjOOHEoWZAFT4q5cNS16IUwX7nHucB2losOLc56H7qyURid",
+                "CONSUMER_KEY": "cbBlTuNsTYwsOIn0tl25JVbmD",
+                "CONSUMER_SECRET": "J3wZYbaeoDxeoGkWXwZmh9TtSvgtkssWoTj9zPz9qkPdFWaWXo",
+                "ACCESS_TOKEN": "1580666379862261770-8XKovTosR8zIRryXHXC3y0cRPwUveN",
+                "ACCESS_TOKEN_SECRET": "6Kx0lXikyWs1EChtbhhwuMZ6KiSALmRSPVQVqllwxKHwb"
+            },
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
