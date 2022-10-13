@@ -1,0 +1,29 @@
+name: Execute Ping CI
+
+on: [pull_request]
+
+jobs:
+  run-ci:
+    name: Run AlgoPing CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9.9
+
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2.1.6
+        with:
+          poetry-version: 1.1.6
+
+      - name: Install python dependencies
+        run: poetry install
+
+      - uses: pre-commit/action@v3.0.0
+        name: "Linters and formatters check"
+        with:
+          extra_args: --all-files --show-diff-on-failure
