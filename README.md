@@ -14,10 +14,10 @@
     <a target="_blank" href="https://twitter.com/algoping">
         <img src="https://img.shields.io/badge/Browse-Twitter-teal.svg" />
     </a>
-    <a href="https://github.com/aorumbayev/awesome-algorand">
+    <a href="https://github.com/aorumbayev/algoping">
         <img src="https://img.shields.io/github/stars/aorumbayev/algoping?color=teal" />
     </a>
-    <a  href="https://github.com/aorumbayev/awesome-algorand/network/members">
+    <a  href="https://github.com/aorumbayev/algoping/network/members">
         <img src="https://img.shields.io/github/forks/aorumbayev/algoping?color=teal" />
     </a>
 </p>
