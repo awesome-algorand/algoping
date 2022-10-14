@@ -70,11 +70,13 @@ pre-commit install
 
 Create twitter app and get your credentials. The following environment variables are required by [`tweepy`](https://www.tweepy.org/):
 
-- `BEARER_TOKEN`
-- `CONSUMER_KEY`
-- `CONSUMER_SECRET`
-- `ACCESS_TOKEN`
-- `ACCESS_TOKEN_SECRET`
+- `BEARER_TOKEN` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
+- `CONSUMER_KEY` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
+- `CONSUMER_SECRET` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
+- `ACCESS_TOKEN` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
+- `ACCESS_TOKEN_SECRET` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
+- `DURATION_SECONDS` - (optional) specify total duration for executing health checks in seconds, defaults to 30 minutes.
+- `LIVENESS_DELAY_SECONDS` - (optional) specify the delay in between liveness checks, defaults to 5 seconds.
 
 Once you have your credentials, you can run the bot locally with:
 
