@@ -34,7 +34,7 @@ Relying on free GitHub infrastructure allows this bot to be executed every 30 mi
 
 ### How does AlgoPing work?
 
-AlgoPing runs a multithreaded Python script that checks the health endpoints of AlgoExplorer and AlgoNode triggered every 30 minutes. Once executed it independently queries AlgoNode and AlgoExplorer endpoints for 300 seconds and counts ratio of unsuccessful requests. If the ratio in relation to total amount requests made within those 300 seconds (with 5 second delay in between rounds) is greater than 50%, this means that within the 30 minutes triggered execution timeframe the endpoints were down for at least ~150 seconds. Hence, AlgoPing will issue a tweet to the [AlgoPing Twitter account](https://twitter.com/algoping) that some endpoints where down in the past 30 minutes timeframe.
+AlgoPing runs a multithreaded Python script that checks the health endpoints of AlgoExplorer and AlgoNode triggered every `60` minutes. Once executed it independently queries AlgoNode and AlgoExplorer endpoints for `DURATION_SECONDS` and counts ratio of unsuccessful requests. If the ratio in relation to total amount requests made within `DURATION_SECONDS` (with `LIVENESS_DELAY_SECONDS` delay in between rounds) is greater than 50%, this means that within the `DURATION_SECONDS` minutes triggered execution timeframe the endpoints were down for at least `DURATION_SECONDS / 2` seconds. Hence, AlgoPing will issue a tweet to the [AlgoPing Twitter account](https://twitter.com/algoping) that some endpoints where down in the past `DURATION_SECONDS` minutes timeframe.
 
 If you want to contribute and improve the health monitoring logic of AlgoPing, please feel free to submit a pull request ❤️
 
