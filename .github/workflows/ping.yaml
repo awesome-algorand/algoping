@@ -2,7 +2,7 @@ name: Execute AlgoPing
 
 on:
   schedule:
-    - cron: "35 * * * *"
+    - cron: "0 */1 * * *"
 
   workflow_dispatch:
 
