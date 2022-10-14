@@ -40,9 +40,10 @@ If you want to contribute and improve the health monitoring logic of AlgoPing, p
 
 ## Prerequisites
 
--   [python 3.9.x](https://www.python.org/)
--   [poetry](https://python-poetry.org/)
--   [pre-commit](https://pre-commit.com/)
+- [python 3.9.x](https://www.python.org/)
+- [poetry](https://python-poetry.org/)
+- [pre-commit](https://pre-commit.com/)
+
 ## Installation
 
 1. Clone the repository:
@@ -78,7 +79,7 @@ Create twitter app and get your credentials. The following environment variables
 Once you have your credentials, you can run the bot locally with:
 
 ```bash
-poetry run python src/algoping.py
+PYTHONPATH="." poetry run python src/algoping.py
 ```
 
 ## Contributing
