@@ -17,11 +17,10 @@ class Endpoint:
 def fetch(endpoint: Endpoint):
     try:
         page = requests.get(endpoint.url)
-        print(f"{endpoint.title} is up")
         return page.status_code == 200, endpoint
     except:
         # Catch HTTP errors/exceptions here
-        print(f"{endpoint.title} is down")
+        print(f"WARNING: {endpoint.title} is down")
         return False, endpoint
 
 
@@ -68,8 +67,8 @@ results = {}
 
 
 pool = ThreadPoolExecutor(max_workers=len(endpoints))
-duration = 300  # seconds
-delay = 5  # seconds
+duration = environ.get("DURATION_SECONDS", 30 * 60)  # seconds
+delay = environ.get("LIVENESS_DELAY_SECONDS", 5)  # seconds
 
 while duration > 0:
     for status, endpoint in pool.map(fetch, endpoints):
@@ -84,6 +83,6 @@ while duration > 0:
 
 for endpoint, history in results.items():
     if endpoint_is_down(endpoint, history):
-        message = f"🚧 WARNING: {endpoint} has been down for at least 3 minute in past 30 minutes! 🕰"
+        message = f"🚧 WARNING: {endpoint} has been down for at least {(duration // 2) / 60} minute in the past {duration / 60} minutes! 🕰"
         tweepy_client.create_tweet(message)
         print(message)
