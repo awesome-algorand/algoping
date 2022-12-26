@@ -9,6 +9,8 @@ license = "MIT"
 python = "^3.9"
 requests = "^2.28.1"
 tweepy = "^4.10.1"
+py-algorand-sdk = "^1.20.2"
+graphene = "^3.2.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"

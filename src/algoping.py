@@ -24,8 +24,14 @@ def fetch(endpoint: Endpoint):
         return False, endpoint
 
 
-def endpoint_is_down(endpoint: Endpoint, history: list):
-    return history.count(False) / len(history) * 100 > 50
+def calculate_downtime(history: list, delay: int):
+    # Calculate the total number of down time periods
+    down_periods = history.count(False)
+    # Calculate the total duration of down time in seconds
+    down_duration = down_periods * delay
+    # Convert down time to minutes and round to the nearest minute
+    down_duration_minutes = round(down_duration / 60)
+    return down_duration_minutes
 
 
 tweepy_client = get_tweepy(
@@ -65,9 +71,8 @@ endpoints = [
 
 results = {}
 
-
 pool = ThreadPoolExecutor(max_workers=len(endpoints))
-duration = environ.get("DURATION_SECONDS", 30 * 60)  # seconds
+duration = environ.get("DURATION_SECONDS", 30)  # seconds
 delay = environ.get("LIVENESS_DELAY_SECONDS", 5)  # seconds
 
 while duration > 0:
@@ -82,7 +87,8 @@ while duration > 0:
     sleep(delay)
 
 for endpoint, history in results.items():
-    if endpoint_is_down(endpoint, history):
-        message = f"🚧 WARNING: {endpoint} has been down for at least {(duration // 2) / 60} minute in the past {duration / 60} minutes! 🕰"
+    downtime = calculate_downtime(history, delay)
+    if downtime > 0:
+        message = f"🚧 WARNING: {endpoint} has been down for {downtime} minutes in the past {duration / 60} minutes! 🕰"
         tweepy_client.create_tweet(message)
         print(message)
