@@ -26,11 +26,13 @@
 
 ### What is AlgoPing?
 
-AlgoPing is a free and open source health monitoring bot for Algorand Developers that issues a [tweet](https://twitter.com/algoping) when [AlgoExplorer](http://AlgoExplorer.io) or [AlgoNode](http://AlgoNode.io)'s node or indexer health endpoints experience outages. If you want to add more public node providers to the list, please submit a pull request ❤️
+AlgoPing is a free and open source health monitoring and block analytics bot for Algorand Developers that issues a [tweet](https://twitter.com/algoping) when [AlgoExplorer](http://AlgoExplorer.io) or [AlgoNode](http://AlgoNode.io)'s node or indexer health endpoints experience outages as well as daily statistics. If you want to add more public node providers to the list, please submit a pull request ❤️
 
 ### Why AlgoPing?
 
 Relying on free GitHub infrastructure allows this bot to be executed every 30 minutes via GitHub Actions. This means that AlgoPing will be able to monitor AlgoExplorer and AlgoNode's health endpoints for outages 24/7. Any developer in Algorand ecosystem can simply subsribe to the twitter account and be notified when AlgoExplorer or AlgoNode's health endpoints experience outages in real time.
+
+Additionally, AlgoPing relies on Bitquery GraphQL API to get daily stats on total amount of block proposals and info on proposers.
 
 ### How does AlgoPing work?
 
@@ -77,11 +79,18 @@ Create twitter app and get your credentials. The following environment variables
 - `ACCESS_TOKEN_SECRET` - (required) - obtain from Twitter Developers portal. Refer to tweepy documentation.
 - `DURATION_SECONDS` - (optional) specify total duration for executing health checks in seconds, defaults to 30 minutes.
 - `LIVENESS_DELAY_SECONDS` - (optional) specify the delay in between liveness checks, defaults to 5 seconds.
+- `BITQUERY_API_KEY` - (optional) specify Bitquery GraphQL API key to get daily stats on total amount of block proposals and info on proposers.
 
 Once you have your credentials, you can run the bot locally with:
 
 ```bash
 PYTHONPATH="." poetry run python src/algoping.py
+```
+
+If you want to run the analytics instead:
+
+```bash
+PYTHONPATH="." poetry run python src/analytics.py
 ```
 
 ## Contributing
