@@ -90,5 +90,5 @@ for endpoint, history in results.items():
     downtime = calculate_downtime(history, delay)
     if downtime > 0:
         message = f"🚧 WARNING: {endpoint} has been down for {downtime} minutes in the past {duration / 60} minutes! 🕰"
-        tweepy_client.create_tweet(message)
+        tweepy_client.create_tweet(text=str(message))
         print(message)

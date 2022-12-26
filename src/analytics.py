@@ -141,10 +141,10 @@ results = {
     "min": to_pretty_value(min(all_proposer_balances)) + " ALGO",
 }
 
-message = f"🕰 In the past 24 hours #Algorand has had {results['total_blocks']} blocks. The following address {results['biggest_proposer']} proposed the most blocks. The average proposer had {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
+tweet = f"🕰 In the past 24 hours #Algorand has had {results['total_blocks']} blocks. The following address {results['biggest_proposer']} proposed the most blocks. The average proposer had {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
 
-if len(message) > 280:
-    message = message[:280] + "..."
+if len(tweet) > 280:
+    tweet = tweet[:280] + "..."
 
-tweepy_client.create_tweet(message)
-print(message)
+print(tweet)
+tweepy_client.create_tweet(text=str(tweet))
