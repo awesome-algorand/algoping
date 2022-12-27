@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta
 from os import environ
 
 import requests
@@ -16,7 +16,15 @@ tweepy_client = get_tweepy(
 )
 
 
-def ellipse_address(address: str, width: int = 4) -> str:
+def to_pretty_value(value, from_algo=True):
+    return (
+        format(float(value) // 1e6 if from_algo else float(value), ",")
+        .rstrip("0")
+        .rstrip(".")
+    )
+
+
+def ellipse_address(address: str, width: int = 3) -> str:
     return f"{address[:width]}...{address[-width:]}"
 
 
@@ -41,23 +49,41 @@ def generate_date_strings():
     # Get today's date
     today = datetime.utcnow().date()
 
-    # Start of day is midnight
-    start_of_day = time(0, 0, 0)
+    yesterday = today - timedelta(days=1)
 
-    # End of day is 23:59:59
-    end_of_day = time(23, 59, 59)
+    # Start of day is midnight
+    start_of_day = time(0, 0, 1)
 
     # Combine date and time to get datetime objects
-    start_datetime = datetime.combine(today, start_of_day)
-    end_datetime = datetime.combine(today, end_of_day)
+    start_datetime = datetime.combine(yesterday, start_of_day)
 
     # Format datetime objects as strings in the desired format
-    start_date_string = start_datetime.astimezone(timezone.utc).strftime("%Y-%m-%d")
-    end_date_string = (
-        end_datetime.astimezone(timezone.utc).strftime("%Y-%m-%d") + "T23:59:59"
-    )
+    start_date_string = start_datetime.strftime("%Y-%m-%d")
+    end_date_string = start_date_string + "T23:59:59"
 
     return start_date_string, end_date_string
+
+
+def to_pretty_date(date_string: str) -> str:
+    # Parse the input date string as a datetime object
+    date = datetime.strptime(date_string, "%Y-%m-%d").date()
+
+    # Get the name of the month and the day of the month
+    month_name = date.strftime("%b")
+    day_of_month = date.strftime("%d")
+
+    # Add a suffix to the day of the month (e.g. "st" for 1, "nd" for 2, etc.)
+    if day_of_month.endswith("1"):
+        suffix = "st"
+    elif day_of_month.endswith("2"):
+        suffix = "nd"
+    elif day_of_month.endswith("3"):
+        suffix = "rd"
+    else:
+        suffix = "th"
+
+    # Return the formatted string
+    return f"{month_name} {day_of_month}{suffix}"
 
 
 # Test the function
@@ -72,7 +98,7 @@ indexer_client = IndexerClient(
 url = "https://graphql.bitquery.io"
 query = """
 query ($limit: Int!, $offset: Int!, $from: ISO8601DateTime, $till: ISO8601DateTime) {
-  algorand {
+  algorand(network: algorand) {
     blocks(
       options: {desc: "count", asc: "address.address", limit: $limit, offset: $offset}
       date: {since: $from, till: $till}
@@ -84,6 +110,13 @@ query ($limit: Int!, $offset: Int!, $from: ISO8601DateTime, $till: ISO8601DateTi
       count
       min_date: minimum(of: date)
       max_date: maximum(of: date)
+    }
+    transactions(options: {asc: "date.date"}, date: {since: $from, till: $from}) {
+      date: date {
+        date
+      }
+      count: countBigInt
+      fee
     }
   }
 }
@@ -112,36 +145,46 @@ headers = {
 
 response = requests.request("POST", url, headers=headers, data=payload).json()
 
-if not response or not response["data"]["algorand"]["blocks"]:
+if (
+    not response
+    or not response["data"]["algorand"]["blocks"]
+    or not response["data"]["algorand"]["transactions"]
+):
     print("No blocks found for this date range")
     exit()
 
 all_proposer_balances = []
 biggest_block_proposer = response["data"]["algorand"]["blocks"][0]["address"]["address"]
-total_blocks = 0
+all_blocks = {}
+total_transactions = to_pretty_value(
+    response["data"]["algorand"]["transactions"][0]["count"], False
+)
 
 for block in response["data"]["algorand"]["blocks"]:
-    account_info = indexer_client.account_info(block["address"]["address"])
+    cur_address = block["address"]["address"]
+
+    if cur_address not in all_blocks:
+        all_blocks[cur_address] = 0
+
+    account_info = indexer_client.account_info(cur_address)
     all_proposer_balances.append(
         account_info["account"]["amount-without-pending-rewards"]
     )
-    total_blocks += block["count"]
+    all_blocks[cur_address] += block["count"]
 
-
-def to_pretty_value(value):
-    return format(value // 1e6, ",")
-
+total_blocks = sum(all_blocks.values())
 
 results = {
     "biggest_proposer": get_nfds_for_address(biggest_block_proposer),
     "total_blocks": total_blocks,
+    "total_txns": total_transactions,
     "average": to_pretty_value(sum(all_proposer_balances) / len(all_proposer_balances))
     + " ALGO",
     "max": to_pretty_value(max(all_proposer_balances)) + " ALGO",
     "min": to_pretty_value(min(all_proposer_balances)) + " ALGO",
 }
 
-tweet = f"🕰 In the past 24 hours #Algorand has had {results['total_blocks']} blocks. The following address {results['biggest_proposer']} proposed the most blocks. The average proposer had {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
+tweet = f"🕰 On {to_pretty_date(start_date)} #Algorand has had {results['total_blocks']} blocks proposed and {results['total_txns']} transactions. The following address {results['biggest_proposer']} proposed the most blocks. The average proposer had {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
 
 if len(tweet) > 280:
     tweet = tweet[:280] + "..."
