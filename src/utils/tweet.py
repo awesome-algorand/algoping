@@ -8,7 +8,6 @@ def get_tweepy(
     access_token: str,
     access_token_secret: str,
 ):
-
     # Create API object
     return tweepy.Client(
         bearer_token=bearer_token,
