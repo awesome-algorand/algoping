@@ -18,19 +18,16 @@ def fetch(endpoint: Endpoint):
     try:
         page = requests.get(endpoint.url)
         return page.status_code == 200, endpoint
-    except:
+    except:  # noqa: E722
         # Catch HTTP errors/exceptions here
         print(f"WARNING: {endpoint.title} is down")
         return False, endpoint
 
 
 def calculate_downtime(history: list, delay: int):
-    # Calculate the total number of down time periods
     down_periods = history.count(False)
-    # Calculate the total duration of down time in seconds
     down_duration = down_periods * delay
-    # Convert down time to minutes and round to the nearest minute
-    down_duration_minutes = round(down_duration / 60)
+    down_duration_minutes = down_duration / 60  # Use a float instead of rounding
     return down_duration_minutes
 
 
@@ -72,8 +69,8 @@ endpoints = [
 results = {}
 
 pool = ThreadPoolExecutor(max_workers=len(endpoints))
-duration = environ.get("DURATION_SECONDS", 30)  # seconds
-delay = environ.get("LIVENESS_DELAY_SECONDS", 5)  # seconds
+duration = int(environ.get("DURATION_SECONDS", 30))  # seconds
+delay = int(environ.get("LIVENESS_DELAY_SECONDS", 5))  # seconds
 
 while duration > 0:
     for status, endpoint in pool.map(fetch, endpoints):
