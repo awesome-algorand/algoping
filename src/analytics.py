@@ -17,11 +17,16 @@ tweepy_client = get_tweepy(
 
 
 def to_pretty_value(value, from_algo=True):
-    return (
+    resp = (
         format(float(value) // 1e6 if from_algo else float(value), ",")
         .rstrip("0")
         .rstrip(".")
     )
+
+    if resp == "0":
+        return "~0.1"
+
+    return resp
 
 
 def ellipse_address(address: str, width: int = 3) -> str:
