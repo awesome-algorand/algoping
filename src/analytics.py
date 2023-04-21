@@ -189,7 +189,7 @@ results = {
     "min": to_pretty_value(min(all_proposer_balances)) + " ALGO",
 }
 
-tweet = f"🕰 On {to_pretty_date(start_date)} #Algorand has had {results['total_blocks']} blocks proposed and {results['total_txns']} transactions. The following address {results['biggest_proposer']} proposed the most blocks. The average proposer had {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
+tweet = f"🕰 On {to_pretty_date(start_date)} #Algorand has had {results['total_blocks']} blocks proposed and {results['total_txns']} transactions. The following address {results['biggest_proposer']} proposed the most blocks. Average of balances of all proposers is {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
 
 if len(tweet) > 280:
     tweet = tweet[:280] + "..."
