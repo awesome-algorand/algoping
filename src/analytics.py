@@ -189,10 +189,38 @@ results = {
     "min": to_pretty_value(min(all_proposer_balances)) + " ALGO",
 }
 
-tweet = f"🕰 On {to_pretty_date(start_date)} #Algorand has had {results['total_blocks']} blocks proposed and {results['total_txns']} transactions. The following address {results['biggest_proposer']} proposed the most blocks. Average of balances of all proposers is {results['average']}, the smallest proposer had {results['min']} and the biggest proposer had {results['max']}"
+tweet = f"🕰 {to_pretty_date(start_date)}: #Algorand had {results['total_blocks']} blocks, {results['total_txns']} txns. Top proposer: {results['biggest_proposer']}. Avg proposer balance: {results['average']}. Smallest: {results['min']}, largest: {results['max']}"  # noqa: E501"
 
 if len(tweet) > 280:
     tweet = tweet[:280] + "..."
 
 print(tweet)
-tweepy_client.create_tweet(text=str(tweet))
+try:
+    tweepy_client.create_tweet(text=str(tweet))
+except Exception as e:
+    print("Error tweeting: ", e)
+
+## Send notiboy notification to algoping channel
+
+algoping_app_id = environ.get("NOTIBOY_APP_ID")
+
+url = f"https://app.notiboy.com/api/v1/chains/algorand/channels/{algoping_app_id}/notifications/private"
+
+payload = {
+    "receivers": [],
+    "message": tweet,
+    "link": "https://twitter.com/AlgoPing",
+    "type": "public",
+}
+
+headers = {
+    "X-USER-ADDRESS": environ.get("NOTIBOY_USER_ADDRESS"),
+    "Authorization": f"Bearer {environ.get('NOTIBOY_API_KEY')}",
+}
+
+try:
+    requests.request(
+        "POST", url, headers=headers, data=json.dumps(payload, indent=4), verify=False
+    )
+except Exception as e:
+    print("Error sending notiboy notification: ", e)
