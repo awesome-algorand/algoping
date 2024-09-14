@@ -163,7 +163,7 @@ for block in response["data"]["algorand"]["blocks"]:
 total_blocks = sum(all_blocks.values())
 
 results = {
-    "biggest_proposer": biggest_block_proposer,
+    "biggest_proposer": ellipse_address(biggest_block_proposer),
     "total_blocks": total_blocks,
     "total_txns": total_transactions,
     "average": to_pretty_value(sum(all_proposer_balances) / len(all_proposer_balances))
