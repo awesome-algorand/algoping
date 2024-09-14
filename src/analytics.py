@@ -33,23 +33,6 @@ def ellipse_address(address: str, width: int = 3) -> str:
     return f"{address[:width]}...{address[-width:]}"
 
 
-def get_nfds_for_address(address: str) -> dict:
-    url = "https://api.nf.domains"
-    url += "/nfd"
-
-    params = {"owner": address}
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        if len(data) > 0:
-            return data[0]
-        else:
-            return ellipse_address(address)
-    except requests.RequestException:
-        # handle error
-        return ellipse_address(address)
-
-
 def generate_date_strings():
     # Get today's date
     today = datetime.utcnow().date()
@@ -180,7 +163,7 @@ for block in response["data"]["algorand"]["blocks"]:
 total_blocks = sum(all_blocks.values())
 
 results = {
-    "biggest_proposer": get_nfds_for_address(biggest_block_proposer),
+    "biggest_proposer": biggest_block_proposer,
     "total_blocks": total_blocks,
     "total_txns": total_transactions,
     "average": to_pretty_value(sum(all_proposer_balances) / len(all_proposer_balances))
