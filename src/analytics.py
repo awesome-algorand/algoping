@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from os import environ
 
 import requests
@@ -33,21 +33,35 @@ def ellipse_address(address: str, width: int = 3) -> str:
     return f"{address[:width]}...{address[-width:]}"
 
 
+def get_nfd_for_address(address: str) -> str:
+    url = "https://api.nf.domains/nfd/lookup"
+    params = {"address": address, "view": "tiny", "allowUnverified": "true"}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if address in data and data[address] and "name" in data[address]:
+            return data[address]["name"]
+    return ellipse_address(address)
+
+
 def generate_date_strings():
     # Get today's date
-    today = datetime.utcnow().date()
+    today = datetime.now(timezone.utc).date()
 
+    # Yesterday's date
     yesterday = today - timedelta(days=1)
 
-    # Start of day is midnight
-    start_of_day = time(0, 0, 1)
+    # Start of yesterday (midnight)
+    start_datetime = datetime.combine(yesterday, time.min, tzinfo=timezone.utc)
 
-    # Combine date and time to get datetime objects
-    start_datetime = datetime.combine(yesterday, start_of_day)
+    # End of yesterday (today's midnight - 1 second)
+    end_datetime = datetime.combine(today, time.min, tzinfo=timezone.utc) - timedelta(
+        seconds=1
+    )
 
     # Format datetime objects as strings in the desired format
     start_date_string = start_datetime.strftime("%Y-%m-%d")
-    end_date_string = start_date_string + "T23:59:59"
+    end_date_string = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
     return start_date_string, end_date_string
 
@@ -99,7 +113,7 @@ query ($limit: Int!, $offset: Int!, $from: ISO8601DateTime, $till: ISO8601DateTi
       min_date: minimum(of: date)
       max_date: maximum(of: date)
     }
-    transactions(options: {asc: "date.date"}, date: {since: $from, till: $from}) {
+    transactions(options: {asc: "date.date"}, date: {since: $from, till: $till}) {
       date: date {
         date
       }
@@ -163,7 +177,7 @@ for block in response["data"]["algorand"]["blocks"]:
 total_blocks = sum(all_blocks.values())
 
 results = {
-    "biggest_proposer": ellipse_address(biggest_block_proposer),
+    "biggest_proposer": get_nfd_for_address(biggest_block_proposer),
     "total_blocks": total_blocks,
     "total_txns": total_transactions,
     "average": to_pretty_value(sum(all_proposer_balances) / len(all_proposer_balances))
