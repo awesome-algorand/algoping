@@ -182,7 +182,7 @@ results = {
     "total_txns": total_transactions,
     "average": to_pretty_value(sum(all_proposer_balances) / len(all_proposer_balances))
     + " ALGO",
-    "max": to_pretty_value(max(all_proposer_balances)) + " ALGO",
+    "max": to_pretty_value(max(all_proposer_balances)) + " #ALGO",
     "min": to_pretty_value(min(all_proposer_balances)) + " ALGO",
 }
 
