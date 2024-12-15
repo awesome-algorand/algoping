@@ -168,10 +168,15 @@ for block in response["data"]["algorand"]["blocks"]:
     if cur_address not in all_blocks:
         all_blocks[cur_address] = 0
 
-    account_info = indexer_client.account_info(cur_address)
-    all_proposer_balances.append(
-        account_info["account"]["amount-without-pending-rewards"]
-    )
+    try:
+        account_info = indexer_client.account_info(cur_address)
+        all_proposer_balances.append(
+            account_info["account"]["amount-without-pending-rewards"]
+        )
+    except Exception as e:
+        print(f"Error fetching account info for {cur_address}: {e}")
+        continue
+
     all_blocks[cur_address] += block["count"]
 
 total_blocks = sum(all_blocks.values())
